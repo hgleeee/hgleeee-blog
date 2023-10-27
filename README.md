@@ -1,5 +1,9 @@
 # hgleeee-blog
 
+## ERD
+- https://www.erdcloud.com/d/SQTMLg5nY7YvDRer9
+- 위의 링크에서 확인 가능하다.
+
 ## 개발 양식
 ### git branch
 - 개인 프로젝트인 관계로 git-flow는 사용하지 않는다.
