@@ -2,12 +2,16 @@ package com.hgleeee.blog.domain;
 
 public enum Role {
 
-    ADMIN("admin"),
-    USER("user");
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER");
 
-    private final String value;
+    private final String name;
 
-    Role(String value) {
-        this.value = value;
+    public String getName() {
+        return name;
+    }
+
+    Role(String name) {
+        this.name = name;
     }
 }

@@ -1,5 +1,26 @@
-server:
-  port: 19240
+spring:
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+  jpa:
+    properties:
+      hibernate:
+        auto_quote_keyword: true
+
+jwt:
+  secret: 7JwYZKR+cIr3kjEi+k4LuvPzt6aCe42F4t81tHnz5kpf2eKjFP0Gpwbmnh7kmvwXhyfnHJLALTQaZ6pALSfusg==
+  expiration-time: 3600000
+
+logging:
+  level:
+    com.hgleeee.blog: debug
 
 springdoc:
   default-consumes-media-type: application/json
