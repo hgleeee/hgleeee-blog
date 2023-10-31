@@ -15,8 +15,10 @@ spring:
         auto_quote_keyword: true
 
 jwt:
-  secret: 7JwYZKR+cIr3kjEi+k4LuvPzt6aCe42F4t81tHnz5kpf2eKjFP0Gpwbmnh7kmvwXhyfnHJLALTQaZ6pALSfusg==
-  expiration-time: 3600000
+  access-token-secret: 7JwYZKR+cIr3kjEi+k4LuvPzt6aCe42F4t81tHnz5kpf2eKjFP0Gpwbmnh7kmvwXhyfnHJLALTQaZ6pALSfusg==
+  refresh-token-secret: Ro/aTqrDEcYQUsiV9MHLISi2xPy0w0BtJm/3SClP7GhS2V4M/gt/1DplbGFzYbNE6JdVhkyNQvcvnDZkofUjsg==
+  access-token-expiration-time: 3600000
+  refresh-token-expiration-time: 1296000000 # 15일
 
 logging:
   level:
