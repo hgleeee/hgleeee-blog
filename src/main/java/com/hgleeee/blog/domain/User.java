@@ -42,10 +42,15 @@ public class User {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public User(String name, String email, String password) {
-        this.role = Role.USER;
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
     }
+
+    public void registerProfileImage(ProfileImage profileImage) {
+        this.profileImage = profileImage;
+    }
+
 }

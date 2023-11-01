@@ -1,5 +1,6 @@
 package com.hgleeee.blog.token;
 
+import com.hgleeee.blog.token.resolver.TokenResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.io.IOException;
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final TokenProvider tokenProvider;
+    private final TokenResolver tokenResolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -27,17 +28,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         String jwt = resolveToken(request);
         log.debug("jwt = {}", jwt);
-        if (StringUtils.hasText(jwt) && tokenProvider.isAccessTokenValid(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        if (StringUtils.hasText(jwt)) {
+            Authentication authentication = tokenResolver.resolve(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(JwtProperties.HEADER_STRING);
+        String bearerToken = request.getHeader(JwtConst.HEADER_STRING);
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtProperties.TOKEN_PREFIX)) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtConst.TOKEN_PREFIX)) {
             return bearerToken.substring(7);
         }
 

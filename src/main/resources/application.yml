@@ -14,15 +14,24 @@ spring:
       hibernate:
         auto_quote_keyword: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1076934023241-ctbla9k82b3uba076c8qjj714omadgun.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            authorization-grant-type: authorization_code
+            scope: profile,email
+
 jwt:
-  access-token-secret: 7JwYZKR+cIr3kjEi+k4LuvPzt6aCe42F4t81tHnz5kpf2eKjFP0Gpwbmnh7kmvwXhyfnHJLALTQaZ6pALSfusg==
-  refresh-token-secret: Ro/aTqrDEcYQUsiV9MHLISi2xPy0w0BtJm/3SClP7GhS2V4M/gt/1DplbGFzYbNE6JdVhkyNQvcvnDZkofUjsg==
+  simple-access-token-secret: 6jgATseGZ9J0uEkl/KlxaAOZkexn6Wq6p2OPgczgVoQ=
+  simple-refresh-token-secret: veETgrao4Umw+3w1sH7icp/wwjj6apx/JJ4MkYCuKjw=
+  oauth2-access-token-secret: w86iGL2uNv7dyQs2uuj3YwSHRfuiLwLNVFkGAyAoxcY=
+  oauth2-refresh-token-secret: OyY8N9lyowTGpKkcriGZiYDUQ56OcADvnWxVfK5g4Ew=
   access-token-expiration-time: 3600000
   refresh-token-expiration-time: 1296000000 # 15일
-
-logging:
-  level:
-    com.hgleeee.blog: debug
 
 springdoc:
   default-consumes-media-type: application/json
@@ -31,3 +40,8 @@ springdoc:
     path: /swagger-ui.html
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true
+
+
+logging:
+  level:
+    com.hgleeee.blog: debug

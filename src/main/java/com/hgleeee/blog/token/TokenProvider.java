@@ -1,21 +1,15 @@
 package com.hgleeee.blog.token;
 
-import com.hgleeee.blog.domain.CustomUserDetails;
+import com.hgleeee.blog.util.EmailExtractor;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -23,40 +17,51 @@ import java.util.stream.Collectors;
 @Component
 public class TokenProvider {
 
-    private final Key accessTokenKey;
-    private final Key refreshTokenKey;
-    private final int accessTokenExpirationTime;
-    private final int refreshTokenExpirationTime;
+    private final Key simpleAccessTokenKey;
+    private final Key simpleRefreshTokenKey;
+    private final Key oAuth2AccessTokenKey;
+    private final Key oAuth2RefreshTokenKey;
+    private final long accessTokenExpirationTime;
+    private final long refreshTokenExpirationTime;
 
     @Autowired
-    public TokenProvider(@Value("${jwt.access-token-secret}") String accessTokenSecret,
-                         @Value("${jwt.refresh-token-secret}") String refreshTokenSecret,
-                         @Value("${jwt.access-token-expiration-time}") int accessTokenExpirationTime,
-                         @Value("${jwt.refresh-token-expiration-time}") int refreshTokenExpirationTime) {
-        this.accessTokenExpirationTime = accessTokenExpirationTime;
-        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
-        this.accessTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessTokenSecret));
-        this.refreshTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(refreshTokenSecret));
+    public TokenProvider(JwtProperties jwtProperties) {
+        this.accessTokenExpirationTime = jwtProperties.getAccessTokenExpirationTime();
+        this.refreshTokenExpirationTime = jwtProperties.getRefreshTokenExpirationTime();
+        this.simpleAccessTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSimpleAccessTokenSecret()));
+        this.simpleRefreshTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getSimpleRefreshTokenSecret()));
+        this.oAuth2AccessTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getOauth2AccessTokenSecret()));
+        this.oAuth2RefreshTokenKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.getOauth2RefreshTokenSecret()));
     }
 
-    public String createAccessToken(Authentication authentication) {
-        return createToken(authentication, accessTokenExpirationTime, accessTokenKey);
+    public String createSimpleAccessToken(Authentication authentication) {
+        return createToken(authentication, accessTokenExpirationTime, simpleAccessTokenKey);
     }
 
-    public String createRefreshToken(Authentication authentication) {
-        return createToken(authentication, refreshTokenExpirationTime, refreshTokenKey);
+    public String createSimpleRefreshToken(Authentication authentication) {
+        return createToken(authentication, refreshTokenExpirationTime, simpleRefreshTokenKey);
     }
 
-    private String createToken(Authentication authentication, long tokenExpirationTime, Key key) {
+    public String createOAuth2AccessToken(Authentication authentication) {
+        return createToken(authentication, accessTokenExpirationTime, oAuth2AccessTokenKey);
+    }
+
+    public String createOAuth2RefreshToken(Authentication authentication) {
+        return createToken(authentication, refreshTokenExpirationTime, oAuth2RefreshTokenKey);
+    }
+
+    private String createToken(Authentication authentication,
+                               long tokenExpirationTime, Key key) {
         Claims claims = Jwts.claims().setSubject(authentication.getName());
-        claims.put(JwtProperties.AUTHORITIES_KEY,
+        claims.put(JwtConst.AUTHORITIES_KEY,
                 authentication.getAuthorities()
                         .stream().map(auth -> auth.getAuthority()).collect(Collectors.joining(",")));
+        claims.put("email", EmailExtractor.extract(authentication));
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .signWith(SignatureAlgorithm.HS512, key)
+                .signWith(SignatureAlgorithm.HS256, key)
                 .setExpiration(createExpireDate(tokenExpirationTime))
                 .compact();
     }
@@ -64,31 +69,6 @@ public class TokenProvider {
     private Date createExpireDate(long tokenExpirationTime) {
         Date now = new Date();
         return new Date(now.getTime() + tokenExpirationTime);
-    }
-
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(accessTokenKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(JwtProperties.AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-        UserDetails principal = new CustomUserDetails(claims.getSubject(), "", authorities);
-        return new CustomAuthenticationToken(principal, token, authorities);
-    }
-
-    public boolean isAccessTokenValid(String token) {
-        return isValid(token, accessTokenKey);
-    }
-
-    public boolean isRefreshTokenValid(String token) {
-        return isValid(token, refreshTokenKey);
     }
 
     private boolean isValid(String token, Key key) {
