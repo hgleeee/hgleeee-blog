@@ -3,6 +3,7 @@ package com.hgleeee.blog.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class RefreshToken {
     @Id
     private String key;
 
+    @Lob
     @Column(nullable = false)
     private String value;
 

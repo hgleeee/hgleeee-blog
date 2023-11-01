@@ -74,9 +74,6 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponseDto reissue(TokenRequestDto tokenRequestDto) {
         String requestedAccessToken = tokenRequestDto.getAccessToken();
         String requestedRefreshToken = tokenRequestDto.getRefreshToken();
-        if (tokenResolver.resolve(requestedRefreshToken) == null) {
-            throw new InvalidTokenException();
-        }
 
         Authentication authentication = tokenResolver.resolve(requestedAccessToken);
         RefreshToken refreshToken = refreshTokenRepository.findById(authentication.getName())

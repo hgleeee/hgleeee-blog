@@ -4,6 +4,7 @@ import com.hgleeee.blog.domain.File;
 import com.hgleeee.blog.domain.ProfileImage;
 import com.hgleeee.blog.domain.Role;
 import com.hgleeee.blog.domain.User;
+import com.hgleeee.blog.oauth2.converter.UserInfoConverter;
 import com.hgleeee.blog.repository.FileRepository;
 import com.hgleeee.blog.repository.ProfileImageRepository;
 import com.hgleeee.blog.repository.UserRepository;
@@ -27,6 +28,7 @@ import java.util.List;
 @Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
+    private final UserInfoConverter<CustomOAuth2UserRequest, OAuth2UserInfo> converter;
     private final UserRepository userRepository;
     private final FileRepository fileRepository;
     private final ProfileImageRepository profileImageRepository;
@@ -42,7 +44,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
-        OAuth2UserInfo oAuth2UserInfo = getOAuth2UserInfo(oAuth2UserRequest, oAuth2User);
+        CustomOAuth2UserRequest customOAuth2UserRequest =
+                new CustomOAuth2UserRequest(oAuth2UserRequest.getClientRegistration(), oAuth2User);
+        OAuth2UserInfo oAuth2UserInfo = converter.convert(customOAuth2UserRequest);
+
+        if (oAuth2UserInfo == null) {
+            throw new OAuth2AuthenticationException("Userinfo로의 convert에 실패하였습니다.");
+        }
+
         if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             OAuth2Error oauth2Error = new OAuth2Error("email_not_found",
                     "Google에 등록되지 않은 이메일입니다.", null);
@@ -61,7 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private void registerOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         File file = File.builder()
-                .url(String.valueOf(oAuth2UserInfo.getAttributes().get("picture")))
+                .url(String.valueOf(oAuth2UserInfo.getImageUrl()))
                 .name("profile_" + oAuth2UserInfo.getEmail())
                 .build();
         fileRepository.save(file);
@@ -78,13 +87,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .user(user)
                 .build();
         profileImageRepository.save(profileImage);
-    }
-
-    private OAuth2UserInfo getOAuth2UserInfo(OAuth2UserRequest userRequest, OAuth2User oAuth2User) {
-        if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
-            return new GoogleUserInfo(oAuth2User.getAttributes());
-        }
-        throw new InternalAuthenticationServiceException("잘못된 요청입니다. [Bad OAuth2UserRequest]");
     }
 
 
