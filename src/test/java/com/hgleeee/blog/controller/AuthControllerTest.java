@@ -1,6 +1,7 @@
 package com.hgleeee.blog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hgleeee.blog.domain.Role;
 import com.hgleeee.blog.domain.User;
 import com.hgleeee.blog.dto.LoginRequestDto;
 import com.hgleeee.blog.dto.SignUpRequestDto;
@@ -47,6 +48,7 @@ class AuthControllerTest {
                 .email("test@test.com")
                 .name("lee")
                 .password(bCryptPasswordEncoder.encode("abcd"))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
@@ -57,7 +59,7 @@ class AuthControllerTest {
                 .build();
 
         // when-then
-        mockMvc.perform(post("/api/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isOk())
@@ -74,7 +76,7 @@ class AuthControllerTest {
                 .build();
 
         // when-then
-        mockMvc.perform(post("/api/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isBadRequest())
@@ -91,6 +93,7 @@ class AuthControllerTest {
                 .email("test@test.com")
                 .name("lee")
                 .password(bCryptPasswordEncoder.encode("abcd"))
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
@@ -102,7 +105,7 @@ class AuthControllerTest {
                 .build();
 
         // when-then
-        mockMvc.perform(post("/api/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDto)))
                 .andExpect(status().isBadRequest())
@@ -123,7 +126,7 @@ class AuthControllerTest {
         String json = objectMapper.writeValueAsString(signUpRequestDto);
 
         // when-then
-        mockMvc.perform(post("/api/signup")
+        mockMvc.perform(post("/api/auth/signup")
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -138,6 +141,7 @@ class AuthControllerTest {
                 .email("test@test.com")
                 .name("lee")
                 .password("abcd")
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
@@ -149,7 +153,7 @@ class AuthControllerTest {
                 .build();
 
         // when-then
-        mockMvc.perform(post("/api/signup")
+        mockMvc.perform(post("/api/auth/signup")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signUpRequestDto)))
                 .andExpect(status().isBadRequest())

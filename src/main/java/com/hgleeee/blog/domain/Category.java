@@ -1,12 +1,15 @@
 package com.hgleeee.blog.domain;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Category {
 
     @Id
@@ -24,4 +27,11 @@ public class Category {
 
     @Column(nullable = false)
     private Integer level;
+
+    @Builder
+    public Category(String code, String name, Integer level) {
+        this.code = code;
+        this.name = name;
+        this.level = level;
+    }
 }

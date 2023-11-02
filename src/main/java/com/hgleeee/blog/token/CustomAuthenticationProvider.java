@@ -1,9 +1,9 @@
 package com.hgleeee.blog.token;
 
+import com.hgleeee.blog.exception.EmailPasswordInvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -60,13 +60,13 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     protected void additionalAuthenticationChecks(UserDetails userDetails,
                                                   CustomAuthenticationToken authentication) {
         if (authentication.getCredentials() == null) {
-            log.debug("Failed to authenticate since no credentials provided");
-            throw new BadCredentialsException("Bad credentials");
+            log.debug("비밀번호로 null 값이 넘어왔습니다.");
+            throw new EmailPasswordInvalidException();
         }
         String presentedPassword = authentication.getCredentials().toString();
         if (!this.passwordEncoder.matches(presentedPassword, userDetails.getPassword())) {
-            log.debug("Failed to authenticate since password does not match stored value");
-            throw new BadCredentialsException("Bad credentials");
+            log.debug("비밀번호가 다릅니다.");
+            throw new EmailPasswordInvalidException();
         }
     }
 

@@ -1,12 +1,17 @@
 package com.hgleeee.blog.domain;
 
+import com.hgleeee.blog.dto.PostResponseDto;
+import com.hgleeee.blog.dto.PostUpdateRequestDto;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Post extends BaseTimeEntity {
 
     @Id
@@ -28,4 +33,29 @@ public class Post extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @Builder
+    public Post(String title, String content, Category category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.viewCount = 0;
+    }
+
+    public PostResponseDto createPostResponseDto() {
+        return PostResponseDto.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .build();
+    }
+
+    public void update(PostUpdateRequestDto postUpdateRequestDto) {
+        this.title = postUpdateRequestDto.getTitle();
+        this.content = postUpdateRequestDto.getContent();
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }

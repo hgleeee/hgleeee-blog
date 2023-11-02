@@ -5,10 +5,6 @@ import com.hgleeee.blog.oauth2.CustomOAuth2SuccessHandler;
 import com.hgleeee.blog.oauth2.CustomOAuth2UserService;
 import com.hgleeee.blog.service.CustomUserDetailsService;
 import com.hgleeee.blog.token.*;
-import com.hgleeee.blog.token.resolver.DelegatingTokenResolver;
-import com.hgleeee.blog.token.resolver.OAuth2TokenResolver;
-import com.hgleeee.blog.token.resolver.SimpleTokenResolver;
-import com.hgleeee.blog.token.resolver.TokenResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,8 +21,6 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
-import java.util.List;
-
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -34,13 +28,13 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2FailureHandler customOAuth2FailureHandler;
-    private final JwtProperties jwtProperties;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -66,10 +60,11 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers(mvcMatcherBuilder.pattern("/api/auth/**")).permitAll()
-                            .anyRequest().authenticated();
+                            .requestMatchers(mvcMatcherBuilder.pattern("/api/post/register")).hasRole("ADMIN")
+                            .requestMatchers(mvcMatcherBuilder.pattern("/api/post/update")).hasRole("ADMIN")
+                            .anyRequest().permitAll();
                 })
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oauth2 -> oauth2
                             .userInfoEndpoint(
                                     userInfoEndpointConfig -> userInfoEndpointConfig
@@ -78,10 +73,6 @@ public class SecurityConfig {
                             .failureHandler(customOAuth2FailureHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS));
         return http.build();
-    }
-
-    private JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(tokenResolver());
     }
 
     @Bean
@@ -102,12 +93,5 @@ public class SecurityConfig {
         return new CustomAuthenticationProvider(bCryptPasswordEncoder(), customUserDetailsService);
     }
 
-    @Bean
-    public TokenResolver tokenResolver() {
-        return new DelegatingTokenResolver(List.of(
-                new SimpleTokenResolver(jwtProperties),
-                new OAuth2TokenResolver(jwtProperties)
-        ));
-    }
 
 }
