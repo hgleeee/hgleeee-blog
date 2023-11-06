@@ -2,10 +2,13 @@ package com.hgleeee.blog.domain;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostImage {
 
     @Id
@@ -19,4 +22,9 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
+
+    public PostImage(File file, Post post) {
+        this.file = file;
+        this.post = post;
+    }
 }

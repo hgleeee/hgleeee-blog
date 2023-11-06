@@ -17,7 +17,7 @@ public class SwaggerConfig {
     public GroupedOpenApi publicAPI() {
         return GroupedOpenApi.builder()
                 .group("spring-test")
-                .pathsToMatch("/test/**")
+                .pathsToMatch("/api/**")
                 .packagesToScan("com.hgleeee.blog.controller")
                 .build();
     }
