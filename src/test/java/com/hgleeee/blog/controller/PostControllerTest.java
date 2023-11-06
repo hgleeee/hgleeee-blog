@@ -4,10 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgleeee.blog.WithMockCustomUser;
 import com.hgleeee.blog.domain.Category;
 import com.hgleeee.blog.domain.Post;
+import com.hgleeee.blog.domain.Role;
+import com.hgleeee.blog.domain.User;
 import com.hgleeee.blog.dto.PostUpdateRequestDto;
 import com.hgleeee.blog.exception.PostNotFoundException;
 import com.hgleeee.blog.repository.CategoryRepository;
 import com.hgleeee.blog.repository.PostRepository;
+import com.hgleeee.blog.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,6 +42,8 @@ class PostControllerTest {
     PostRepository postRepository;
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeEach
     void init() {
@@ -207,16 +215,14 @@ class PostControllerTest {
     void updateWithSuccess() throws Exception {
         // given
         Post savedPost = postRepository.save(Post.builder()
-                        .title("")
-                        .content("")
-                        .build());
+                .title("")
+                .content("")
+                .build());
         categoryRepository.save(Category.builder()
                 .code("100")
                 .level(1)
                 .name("Spring-boot")
                 .build());
-
-        System.out.println(savedPost.getId());
 
         PostUpdateRequestDto postUpdateRequestDto = PostUpdateRequestDto.builder()
                 .postId(savedPost.getId())
@@ -239,5 +245,32 @@ class PostControllerTest {
         Assertions.assertEquals("안녕하세요", post.getTitle());
         Assertions.assertEquals("반갑습니다", post.getContent());
     }
+
+    @Test
+    @DisplayName("검색 조건에 맞는 글 목록 가져오기 성공")
+    void getPostsWithFailure_NoAuthority() throws Exception {
+        // given
+        User admin = User.builder()
+                .email("admin@test.com")
+                .name("zzang")
+                .role(Role.ADMIN)
+                .name("관리자")
+                .build();
+        userRepository.save(admin);
+        postRepository.saveAll(IntStream.range(0, 25)
+                .mapToObj(i -> Post.builder()
+                        .title("hello" + i)
+                        .content("content " + i)
+                        .user(admin)
+                        .build())
+                .collect(Collectors.toList()));
+
+        // when - then
+        mockMvc.perform(get("/api/post/posts?pageNo=3")
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
 
 }

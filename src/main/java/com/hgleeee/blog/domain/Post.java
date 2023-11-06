@@ -34,11 +34,16 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Builder
-    public Post(String title, String content, Category category) {
+    public Post(String title, String content, Category category, User user) {
         this.title = title;
         this.content = content;
         this.category = category;
+        this.user = user;
         this.viewCount = 0;
     }
 
