@@ -1,4 +1,4 @@
-package com.hgleeee.blog.dto;
+package com.hgleeee.blog.dto.response;
 
 import lombok.Builder;
 import lombok.Data;

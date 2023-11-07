@@ -1,6 +1,6 @@
 package com.hgleeee.blog.controller;
 
-import com.hgleeee.blog.dto.ErrorResponseDto;
+import com.hgleeee.blog.dto.response.ErrorResponseDto;
 import com.hgleeee.blog.exception.BlogException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

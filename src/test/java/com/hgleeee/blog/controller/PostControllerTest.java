@@ -6,7 +6,7 @@ import com.hgleeee.blog.domain.Category;
 import com.hgleeee.blog.domain.Post;
 import com.hgleeee.blog.domain.Role;
 import com.hgleeee.blog.domain.User;
-import com.hgleeee.blog.dto.PostUpdateRequestDto;
+import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
 import com.hgleeee.blog.exception.PostNotFoundException;
 import com.hgleeee.blog.repository.CategoryRepository;
 import com.hgleeee.blog.repository.PostRepository;
@@ -43,14 +43,8 @@ class PostControllerTest {
     UserRepository userRepository;
 
     @BeforeEach
-    void init() {
-        postRepository.deleteAll();
-        userRepository.deleteAll();
-        categoryRepository.deleteAll();
-    }
-
     @AfterEach
-    void after() {
+    void init() {
         postRepository.deleteAll();
         userRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -227,6 +221,7 @@ class PostControllerTest {
         categoryRepository.save(Category.builder()
                 .code("100")
                 .level(1)
+                .order(0)
                 .name("Spring-boot")
                 .build());
 
