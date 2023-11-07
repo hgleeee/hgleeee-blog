@@ -58,3 +58,4 @@ clean {
 tasks.withType(JavaCompile) {
 	options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
+

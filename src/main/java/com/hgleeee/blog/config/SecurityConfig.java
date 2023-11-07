@@ -60,6 +60,9 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(auth -> {
                     auth
+                            .requestMatchers(mvcMatcherBuilder.pattern("/api/comment/register")).authenticated()
+                            .requestMatchers(mvcMatcherBuilder.pattern("/api/comment/update")).authenticated()
+                            .requestMatchers(mvcMatcherBuilder.pattern("/api/comment/delete")).authenticated()
                             .requestMatchers(mvcMatcherBuilder.pattern("/api/post/register")).hasRole("ADMIN")
                             .requestMatchers(mvcMatcherBuilder.pattern("/api/post/update")).hasRole("ADMIN")
                             .anyRequest().permitAll();

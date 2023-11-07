@@ -6,6 +6,7 @@ import com.hgleeee.blog.domain.User;
 import com.hgleeee.blog.dto.LoginRequestDto;
 import com.hgleeee.blog.dto.SignUpRequestDto;
 import com.hgleeee.blog.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,8 +36,13 @@ class AuthControllerTest {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @BeforeEach()
+    @BeforeEach
     void init() {
+        userRepository.deleteAll();
+    }
+
+    @AfterEach
+    void after() {
         userRepository.deleteAll();
     }
 

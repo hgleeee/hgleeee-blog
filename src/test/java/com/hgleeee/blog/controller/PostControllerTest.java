@@ -11,10 +11,7 @@ import com.hgleeee.blog.exception.PostNotFoundException;
 import com.hgleeee.blog.repository.CategoryRepository;
 import com.hgleeee.blog.repository.PostRepository;
 import com.hgleeee.blog.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,11 +40,20 @@ class PostControllerTest {
     @Autowired
     CategoryRepository categoryRepository;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @BeforeEach
     void init() {
         postRepository.deleteAll();
+        userRepository.deleteAll();
+        categoryRepository.deleteAll();
+    }
+
+    @AfterEach
+    void after() {
+        postRepository.deleteAll();
+        userRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     @Test

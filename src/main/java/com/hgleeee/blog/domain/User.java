@@ -32,13 +32,13 @@ public class User {
 
     private LocalDateTime deletedAt;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private ProfileImage profileImage;
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Notice> notices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
