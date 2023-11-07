@@ -1,9 +1,9 @@
 package com.hgleeee.blog.controller;
 
-import com.hgleeee.blog.dto.LoginRequestDto;
-import com.hgleeee.blog.dto.SignUpRequestDto;
-import com.hgleeee.blog.dto.TokenRequestDto;
-import com.hgleeee.blog.dto.TokenResponseDto;
+import com.hgleeee.blog.dto.request.LoginRequestDto;
+import com.hgleeee.blog.dto.request.SignUpRequestDto;
+import com.hgleeee.blog.dto.request.TokenRequestDto;
+import com.hgleeee.blog.dto.response.TokenResponseDto;
 import com.hgleeee.blog.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

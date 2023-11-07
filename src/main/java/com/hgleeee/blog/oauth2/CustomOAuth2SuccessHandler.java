@@ -2,7 +2,7 @@ package com.hgleeee.blog.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgleeee.blog.domain.RefreshToken;
-import com.hgleeee.blog.dto.TokenResponseDto;
+import com.hgleeee.blog.dto.response.TokenResponseDto;
 import com.hgleeee.blog.repository.RefreshTokenRepository;
 import com.hgleeee.blog.token.TokenProvider;
 import com.hgleeee.blog.util.EmailExtractor;

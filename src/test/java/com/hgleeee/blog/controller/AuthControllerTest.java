@@ -3,8 +3,8 @@ package com.hgleeee.blog.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgleeee.blog.domain.Role;
 import com.hgleeee.blog.domain.User;
-import com.hgleeee.blog.dto.LoginRequestDto;
-import com.hgleeee.blog.dto.SignUpRequestDto;
+import com.hgleeee.blog.dto.request.LoginRequestDto;
+import com.hgleeee.blog.dto.request.SignUpRequestDto;
 import com.hgleeee.blog.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +37,8 @@ class AuthControllerTest {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @BeforeEach
-    void init() {
-        userRepository.deleteAll();
-    }
-
     @AfterEach
-    void after() {
+    void init() {
         userRepository.deleteAll();
     }
 

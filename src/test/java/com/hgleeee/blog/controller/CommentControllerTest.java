@@ -3,8 +3,8 @@ package com.hgleeee.blog.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hgleeee.blog.WithMockCustomUser;
 import com.hgleeee.blog.domain.*;
-import com.hgleeee.blog.dto.CommentRequestDto;
-import com.hgleeee.blog.dto.CommentUpdateRequestDto;
+import com.hgleeee.blog.dto.request.CommentRequestDto;
+import com.hgleeee.blog.dto.request.CommentUpdateRequestDto;
 import com.hgleeee.blog.exception.CommentNotFoundException;
 import com.hgleeee.blog.repository.CategoryRepository;
 import com.hgleeee.blog.repository.CommentRepository;
@@ -59,6 +59,7 @@ class CommentControllerTest {
         category = Category.builder()
                 .code("100")
                 .level(1)
+                .order(0)
                 .name("spring")
                 .build();
         category = categoryRepository.save(category);

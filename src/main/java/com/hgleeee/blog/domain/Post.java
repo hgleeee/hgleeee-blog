@@ -1,7 +1,7 @@
 package com.hgleeee.blog.domain;
 
-import com.hgleeee.blog.dto.PostResponseDto;
-import com.hgleeee.blog.dto.PostUpdateRequestDto;
+import com.hgleeee.blog.dto.response.PostResponseDto;
+import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

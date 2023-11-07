@@ -1,8 +1,8 @@
 package com.hgleeee.blog.service;
 
-import com.hgleeee.blog.dto.PostPreviewDto;
-import com.hgleeee.blog.dto.PostResponseDto;
-import com.hgleeee.blog.dto.PostUpdateRequestDto;
+import com.hgleeee.blog.dto.response.PostPreviewDto;
+import com.hgleeee.blog.dto.response.PostResponseDto;
+import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
 import com.hgleeee.blog.dto.SearchCriteriaDto;
 
 import java.util.List;

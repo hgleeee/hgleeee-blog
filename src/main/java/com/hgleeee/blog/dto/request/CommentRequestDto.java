@@ -1,4 +1,4 @@
-package com.hgleeee.blog.dto;
+package com.hgleeee.blog.dto.request;
 
 import com.hgleeee.blog.domain.Comment;
 import com.hgleeee.blog.domain.Post;
