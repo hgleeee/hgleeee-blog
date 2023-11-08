@@ -3,6 +3,7 @@ package com.hgleeee.blog.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +24,7 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 
+    @Builder
     public PostImage(File file, Post post) {
         this.file = file;
         this.post = post;
