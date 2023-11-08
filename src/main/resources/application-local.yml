@@ -66,6 +66,8 @@ springdoc:
     disable-swagger-default-url: true
     display-query-params-without-oauth2: true
 
+file:
+  dir: D:\work\image\
 
 logging:
   level:
