@@ -42,7 +42,6 @@ class PostControllerTest {
     @Autowired
     UserRepository userRepository;
 
-    @BeforeEach
     @AfterEach
     void init() {
         postRepository.deleteAll();

@@ -34,7 +34,6 @@ class CategoryControllerTest {
     @Autowired
     CategoryRepository categoryRepository;
 
-    @BeforeEach
     @AfterEach
     void init() {
         categoryRepository.deleteAll();
