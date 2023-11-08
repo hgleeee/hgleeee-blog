@@ -7,7 +7,6 @@ import com.hgleeee.blog.dto.request.LoginRequestDto;
 import com.hgleeee.blog.dto.request.SignUpRequestDto;
 import com.hgleeee.blog.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ class AuthControllerTest {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @BeforeEach
     @AfterEach
     void init() {
         userRepository.deleteAll();

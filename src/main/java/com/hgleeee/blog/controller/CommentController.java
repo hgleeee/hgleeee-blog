@@ -30,20 +30,20 @@ public class CommentController {
     public ResponseEntity<Long> register(Authentication authentication,
                                          final @RequestBody CommentRequestDto commentRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(commentService.register(authentication, commentRequestDto));
+                .body(commentService.register(authentication.getName(), commentRequestDto));
     }
 
     @PatchMapping("/update")
     public ResponseEntity<Void> update(Authentication authentication,
                                        @RequestBody CommentUpdateRequestDto commentUpdateRequestDto) {
-        commentService.update(authentication, commentUpdateRequestDto);
+        commentService.update(authentication.getName(), commentUpdateRequestDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Void> delete(Authentication authentication,
                                        @RequestParam Long commentId) {
-        commentService.delete(authentication, commentId);
+        commentService.delete(authentication.getName(), commentId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

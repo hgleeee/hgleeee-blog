@@ -5,8 +5,8 @@ import com.hgleeee.blog.domain.Post;
 import com.hgleeee.blog.domain.User;
 import com.hgleeee.blog.dto.CommentCriteriaDto;
 import com.hgleeee.blog.dto.request.CommentRequestDto;
-import com.hgleeee.blog.dto.response.CommentResponseDto;
 import com.hgleeee.blog.dto.request.CommentUpdateRequestDto;
+import com.hgleeee.blog.dto.response.CommentResponseDto;
 import com.hgleeee.blog.exception.CommentNotFoundException;
 import com.hgleeee.blog.exception.NoAuthorityException;
 import com.hgleeee.blog.exception.PostNotFoundException;
@@ -16,7 +16,6 @@ import com.hgleeee.blog.repository.PostRepository;
 import com.hgleeee.blog.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -31,21 +30,23 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final NoticeService noticeService;
 
     @Override
-    public Long register(Authentication authentication, CommentRequestDto commentRequestDto) {
-        final User user = userRepository.findByEmail(authentication.getName())
+    public Long register(String currentUserEmail, CommentRequestDto commentRequestDto) {
+        final User user = userRepository.findByEmail(currentUserEmail)
                 .orElseThrow(UserNotFoundException::new);
         final Post post = postRepository.findById(commentRequestDto.getPostId())
                 .orElseThrow(PostNotFoundException::new);
+        Comment savedComment;
         if (commentRequestDto.getParentCommentId() == null) {
-            return commentRepository.save(commentRequestDto.toEntity(user, post)).getId();
+            savedComment = commentRepository.save(commentRequestDto.toEntity(user, post));
+        } else {
+            Comment parentComment = commentRepository.findById(commentRequestDto.getParentCommentId())
+                    .orElseThrow(CommentNotFoundException::new);
+            savedComment = commentRepository.save(commentRequestDto.toEntity(user, post, parentComment));
         }
-        Comment parentComment = commentRepository.findById(commentRequestDto.getParentCommentId())
-                .orElseThrow(CommentNotFoundException::new);
-
-        Comment savedComment = commentRepository.save(
-                commentRequestDto.toEntity(user, post, parentComment));
+        noticeService.createNotice(savedComment);
         return savedComment.getId();
     }
 
@@ -68,20 +69,20 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void update(Authentication authentication, CommentUpdateRequestDto commentUpdateRequestDto) {
+    public void update(String currentUserEmail, CommentUpdateRequestDto commentUpdateRequestDto) {
         Comment comment = commentRepository.findById(commentUpdateRequestDto.getCommentId())
                 .orElseThrow(CommentNotFoundException::new);
-        if (!comment.getUser().getEmail().equals(authentication.getName())) {
+        if (!comment.getUser().getEmail().equals(currentUserEmail)) {
             throw new NoAuthorityException();
         }
         comment.update(commentUpdateRequestDto.getContent());
     }
 
     @Override
-    public void delete(Authentication authentication, Long commentId) {
+    public void delete(String currentUserEmail, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
-        if (!comment.getUser().getEmail().equals(authentication.getName())) {
+        if (!comment.getUser().getEmail().equals(currentUserEmail)) {
             throw new NoAuthorityException();
         }
         comment.delete();

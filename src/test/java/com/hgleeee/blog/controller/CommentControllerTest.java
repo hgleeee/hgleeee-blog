@@ -51,11 +51,6 @@ class CommentControllerTest {
 
     @BeforeEach
     void init() {
-        commentRepository.deleteAll();
-        postRepository.deleteAll();
-        userRepository.deleteAll();
-        categoryRepository.deleteAll();
-
         category = Category.builder()
                 .code("100")
                 .level(1)
