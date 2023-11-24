@@ -9,8 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,37 +23,48 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponseDto> findAll() {
         List<Category> categories = categoryRepository.findAll();
-        Collections.sort(categories);
         return categories.stream()
+                .filter(c -> c.getLevel() == 0)
                 .map(c -> CategoryResponseDto.toDto(c))
                 .collect(Collectors.toList());
     }
 
     @Override
     public void update(CategoryRequestDto categoryRequestDto) {
-        List<Category> categories = categoryRepository.findAll();
+        List<String> savedCodes = categoryRepository.findAll().stream()
+                .map(c -> c.getCode())
+                .collect(Collectors.toList());
         for (CategoryRequestDto.CategoryUnitRequestDto categoryUnitRequestDto : categoryRequestDto.getCategories()) {
-            Category category = extractCategory(categoryUnitRequestDto, categories);
-            if (category != null) {
-                category.update(categoryUnitRequestDto);
-                continue;
-            }
-
-            Category toSaveCategory = categoryUnitRequestDto.toEntity();
-            toSaveCategory.setParentCategory(
-                    categoryRepository.findById(categoryUnitRequestDto.getCode())
-                            .orElseThrow(CategoryNotFoundException::new));
-            categoryRepository.save(toSaveCategory);
+            updateMainCategory(categoryUnitRequestDto);
+            savedCodes.remove(categoryUnitRequestDto.getCode());
         }
+        for (CategoryRequestDto.CategoryUnitRequestDto categoryUnitRequestDto : categoryRequestDto.getCategories()) {
+            for (CategoryRequestDto.SubCategoryUnitRequestDto subCategoryUnitRequestDto : categoryUnitRequestDto.getSubCategories()) {
+                updateSubCategory(subCategoryUnitRequestDto, categoryUnitRequestDto.getCode());
+                savedCodes.remove(subCategoryUnitRequestDto.getCode());
+            }
+        }
+
+        categoryRepository.deleteAllByIdInBatch(savedCodes);
     }
 
-    private Category extractCategory(CategoryRequestDto.CategoryUnitRequestDto categoryUnitRequestDto,
-                                     List<Category> categories) {
-        for (Category category : categories) {
-            if (category.getCode().equals(categoryUnitRequestDto.getCode())) {
-                return category;
-            }
+    private void updateSubCategory(CategoryRequestDto.SubCategoryUnitRequestDto subCategoryUnitRequestDto,
+                                   String parentCode) {
+        Optional<Category> optionalCategory = categoryRepository.findById(subCategoryUnitRequestDto.getCode());
+        if (optionalCategory.isPresent()) {
+            optionalCategory.get().update(subCategoryUnitRequestDto);
+            return;
         }
-        return null;
+        categoryRepository.save(subCategoryUnitRequestDto.toEntity(
+                categoryRepository.findById(parentCode).orElseThrow(CategoryNotFoundException::new)));
+    }
+
+    private void updateMainCategory(CategoryRequestDto.CategoryUnitRequestDto categoryUnitRequestDto) {
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryUnitRequestDto.getCode());
+        if (optionalCategory.isPresent()) {
+            optionalCategory.get().update(categoryUnitRequestDto);
+            return;
+        }
+        categoryRepository.save(categoryUnitRequestDto.toEntity());
     }
 }

@@ -52,6 +52,7 @@ public class Post extends BaseTimeEntity {
                 .id(id)
                 .title(title)
                 .content(content)
+                .createdAt(getCreatedAt())
                 .build();
     }
 
