@@ -42,15 +42,12 @@ public class Comment extends BaseTimeEntity implements Comparable<Comment> {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Comment(String content, Post post, User user, Comment parentComment, Integer level) {
+    public Comment(String content, Post post, User user, Comment parentComment) {
         this.content = content;
         this.post = post;
         this.user = user;
         this.parentComment = parentComment;
-        this.level = level;
-        if (level == null) {
-            this.level = 0;
-        }
+        this.level = (parentComment == null) ? 0 : parentComment.getLevel()+1;
     }
 
     @Override

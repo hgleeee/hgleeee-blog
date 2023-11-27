@@ -2,16 +2,14 @@ package com.hgleeee.blog.controller;
 
 import com.hgleeee.blog.dto.CommentCriteriaDto;
 import com.hgleeee.blog.dto.request.CommentRequestDto;
-import com.hgleeee.blog.dto.response.CommentResponseDto;
 import com.hgleeee.blog.dto.request.CommentUpdateRequestDto;
+import com.hgleeee.blog.dto.response.CommentsResponseDto;
 import com.hgleeee.blog.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +19,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping("/comments")
-    public ResponseEntity<List<CommentResponseDto>> getComments(final @ModelAttribute CommentCriteriaDto commentCriteriaDto) {
+    public ResponseEntity<CommentsResponseDto> getComments(final @ModelAttribute CommentCriteriaDto commentCriteriaDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentService.getComments(commentCriteriaDto));
     }

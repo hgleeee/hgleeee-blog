@@ -1,6 +1,5 @@
 package com.hgleeee.blog.domain;
 
-import com.hgleeee.blog.dto.response.PostResponseDto;
 import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -45,15 +44,6 @@ public class Post extends BaseTimeEntity {
         this.category = category;
         this.user = user;
         this.viewCount = 0;
-    }
-
-    public PostResponseDto createPostResponseDto() {
-        return PostResponseDto.builder()
-                .id(id)
-                .title(title)
-                .content(content)
-                .createdAt(getCreatedAt())
-                .build();
     }
 
     public void update(PostUpdateRequestDto postUpdateRequestDto) {

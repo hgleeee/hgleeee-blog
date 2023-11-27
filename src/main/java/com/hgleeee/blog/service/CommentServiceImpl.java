@@ -7,10 +7,8 @@ import com.hgleeee.blog.dto.CommentCriteriaDto;
 import com.hgleeee.blog.dto.request.CommentRequestDto;
 import com.hgleeee.blog.dto.request.CommentUpdateRequestDto;
 import com.hgleeee.blog.dto.response.CommentResponseDto;
-import com.hgleeee.blog.exception.CommentNotFoundException;
-import com.hgleeee.blog.exception.NoAuthorityException;
-import com.hgleeee.blog.exception.PostNotFoundException;
-import com.hgleeee.blog.exception.UserNotFoundException;
+import com.hgleeee.blog.dto.response.CommentsResponseDto;
+import com.hgleeee.blog.exception.*;
 import com.hgleeee.blog.repository.CommentRepository;
 import com.hgleeee.blog.repository.PostRepository;
 import com.hgleeee.blog.repository.UserRepository;
@@ -51,21 +49,33 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponseDto> getComments(CommentCriteriaDto commentCriteriaDto) {
-        int offset = (commentCriteriaDto.getPageNo()-1) * commentCriteriaDto.getPageSize();
+    public CommentsResponseDto getComments(CommentCriteriaDto commentCriteriaDto) {
+        int offset = (commentCriteriaDto.getPageNo() - 1) * commentCriteriaDto.getPageSize();
         List<Comment> comments = commentRepository.findByCommentCriteria(commentCriteriaDto);
+        if (pageNumberNotValid(comments, offset)) {
+            throw new PageNotFoundException();
+        }
         Collections.sort(comments);
 
-        return comments
-                .subList(offset, offset + commentCriteriaDto.getPageSize())
-                .stream()
-                .map(c -> CommentResponseDto.builder()
-                        .content(c.getContent())
-                        .authorName(c.getUser().getName())
-                        .level(c.getLevel())
-                        .createdAt(c.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
+        return CommentsResponseDto.builder()
+                .totalCommentCount(comments.size())
+                .comments(comments
+                        .subList(offset, Math.min(offset + commentCriteriaDto.getPageSize(), comments.size()))
+                        .stream()
+                        .map(c -> CommentResponseDto.builder()
+                                .id(c.getId())
+                                .content(c.getContent())
+                                .authorName(c.getUser().getName())
+                                .level(c.getLevel())
+                                .createdAt(c.getCreatedAt())
+                                .deletedAt(c.getDeletedAt())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    private static boolean pageNumberNotValid(List<Comment> comments, int offset) {
+        return comments.size() < offset;
     }
 
     @Override

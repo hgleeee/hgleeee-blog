@@ -27,7 +27,6 @@ public class CommentRequestDto {
                 .user(user)
                 .post(post)
                 .content(content)
-                .level(0)
                 .build();
     }
     public Comment toEntity(User user, Post post, Comment parentComment) {
@@ -36,7 +35,6 @@ public class CommentRequestDto {
                 .post(post)
                 .parentComment(parentComment)
                 .content(content)
-                .level(parentComment.getLevel()+1)
                 .build();
     }
 }
