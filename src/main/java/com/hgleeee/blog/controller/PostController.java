@@ -1,9 +1,9 @@
 package com.hgleeee.blog.controller;
 
-import com.hgleeee.blog.dto.response.PostPreviewDto;
-import com.hgleeee.blog.dto.response.PostResponseDto;
-import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
 import com.hgleeee.blog.dto.SearchCriteriaDto;
+import com.hgleeee.blog.dto.request.PostUpdateRequestDto;
+import com.hgleeee.blog.dto.response.PostResponseDto;
+import com.hgleeee.blog.dto.response.PostsPreviewDto;
 import com.hgleeee.blog.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Post Controller", description = "Post 관련 API입니다.")
 @RestController
@@ -47,9 +45,9 @@ public class PostController {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostPreviewDto>> getPosts(@ModelAttribute SearchCriteriaDto searchCriteriaDto) {
-        List<PostPreviewDto> result = postService.getPostsBySearchCriteria(searchCriteriaDto);
+    public ResponseEntity<PostsPreviewDto> getPosts(@ModelAttribute SearchCriteriaDto searchCriteriaDto) {
+        PostsPreviewDto postsPreviewDto = postService.getPostsBySearchCriteria(searchCriteriaDto);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(result);
+                .body(postsPreviewDto);
     }
 }

@@ -33,7 +33,8 @@ public class Category implements Comparable<Category> {
     private Integer order;
 
     @Builder
-    public Category(String code, String name, Integer level, Integer order, Category parentCategory) {
+    public Category(String code, String name, Integer level, Integer order,
+                    Category parentCategory) {
         this.code = code;
         this.name = name;
         this.level = level;
@@ -56,12 +57,17 @@ public class Category implements Comparable<Category> {
         return order - o.order;
     }
 
-    public void setParentCategory(Category parentCategory) {
-        this.parentCategory = parentCategory;
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 
     public void update(CategoryRequestDto.CategoryUnitRequestDto categoryUnitRequestDto) {
-        this.code = categoryUnitRequestDto.getCode();
+        this.order = categoryUnitRequestDto.getOrder();
         this.name = categoryUnitRequestDto.getName();
+    }
+
+    public void update(CategoryRequestDto.SubCategoryUnitRequestDto subCategoryUnitRequestDto) {
+        this.order = subCategoryUnitRequestDto.getOrder();
+        this.name = subCategoryUnitRequestDto.getName();
     }
 }

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class CommentResponseDto {
 
+    private Long id;
     private String authorName;
     private int level;
     private String content;
@@ -17,8 +18,9 @@ public class CommentResponseDto {
     private LocalDateTime deletedAt;
 
     @Builder
-    public CommentResponseDto(String authorName, int level, String content,
+    public CommentResponseDto(Long id, String authorName, int level, String content,
                               LocalDateTime createdAt, LocalDateTime deletedAt) {
+        this.id = id;
         this.authorName = authorName;
         this.level = level;
         this.content = content;

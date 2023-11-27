@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.hgleeee.blog.domain.QCategory.category;
 import static com.hgleeee.blog.domain.QPost.post;
 import static com.hgleeee.blog.domain.QUser.user;
 
@@ -24,6 +25,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         long offset = (searchCriteriaDto.getPageNo() - 1) * searchCriteriaDto.getPageSize();
         return queryFactory.selectFrom(post)
                 .join(post.user, user)
+                .join(post.category, category)
                 .where(searchCriteriaFit(searchCriteriaDto))
                 .orderBy(post.createdAt.desc())
                 .limit(searchCriteriaDto.getPageSize())
@@ -32,10 +34,10 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     private BooleanExpression searchCriteriaFit(SearchCriteriaDto searchCriteriaDto) {
-        String keyword = searchCriteriaDto.getKeyword();
-        if (StringUtils.isEmpty(keyword)) {
+        String categoryCode = searchCriteriaDto.getCategory();
+        if (StringUtils.isEmpty(categoryCode)) {
             return null;
         }
-        return post.title.contains(searchCriteriaDto.getKeyword());
+        return post.category.code.eq(categoryCode);
     }
 }
